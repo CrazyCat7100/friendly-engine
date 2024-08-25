@@ -6,13 +6,6 @@ let app = express();
 // Connect to MongoDB (consider environment variables for connection string)
 mongoose.connect('mongodb+srv://1:<db_password>@leaderboard.orui4.mongodb.net/?retryWrites=true&w=majority&appName=leaderboard')
 
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
-  .catch((error) => {
-    console.error("Error connecting to MongoDB:", error);
-  });
-
 // Middleware
 app.use(express.json());
 app.set("view engine", "ejs");
@@ -37,16 +30,13 @@ newScore.save();
 
 // Routes
 app.get("/", async function (req, res) {
-  try {
+
     // Fetch top 10 scores, sorted by score in descending order
-    const topScores = await Score.find().sort({ score: -1 }).limit(10);
+    const topScores = await Score.find().sort({ score: -1 }).limit(14534523455345);
 
     // Render the index.ejs and pass the topScores
     res.render("index.ejs", { topScores });
-  } catch (error) {
-    console.error("Error fetching scores:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error" }); // Consider more specific error messages
-  }
+
 });
 
 // Route to handle saving scores
