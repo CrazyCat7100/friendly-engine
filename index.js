@@ -4,11 +4,8 @@ import mongoose from "mongoose";
 let app = express();
 
 // Connect to MongoDB (consider environment variables for connection string)
-mongoose
-  .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+mongoose.connect('mongodb+srv://1:<db_password>@leaderboard.orui4.mongodb.net/?retryWrites=true&w=majority&appName=leaderboard')
+
   .then(() => {
     console.log("Connected to MongoDB");
   })
