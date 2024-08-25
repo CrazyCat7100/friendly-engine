@@ -3,13 +3,12 @@ import mongoose from "mongoose";
 
 let app = express();
 
-// Connect to MongoDB
+// Connect to MongoDB (consider environment variables for connection string)
 mongoose
-  .connect(
-    "mongodb+srv://1:1@leaderboard.orui4.mongodb.net/?retryWrites=true&w=majority&appName=leaderboard",
-    {
-    }
-  )
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     console.log("Connected to MongoDB");
   })
@@ -18,8 +17,9 @@ mongoose
   });
 
 // Middleware
-app.use(express.static("./static"));
-app.set("view engine", "ejs")
+app.use(express.json());
+app.set("view engine", "ejs");
+
 // Define a schema and model
 const Schema = mongoose.Schema;
 
@@ -42,13 +42,13 @@ newScore.save();
 app.get("/", async function (req, res) {
   try {
     // Fetch top 10 scores, sorted by score in descending order
-    const topScores = await Score.find().sort({ score: -1 }).limit(213049758203948);
+    const topScores = await Score.find().sort({ score: -1 }).limit(10);
 
     // Render the index.ejs and pass the topScores
     res.render("index.ejs", { topScores });
   } catch (error) {
     console.error("Error fetching scores:", error);
-    res.status(500).send("Internal Server Error");
+    res.status(500).json({ success: false, message: "Internal Server Error" }); // Consider more specific error messages
   }
 });
 
@@ -83,19 +83,18 @@ app.post("/score", async (req, res) => {
           success: true,
         });
       }
-      
-
     }
+
     const newScore = new Score({ username, score });
     await newScore.save();
     res.json({ success: true });
   } catch (error) {
     console.error("Error saving score:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error" }); // Consider more specific error messages
   }
 });
 
 // Start the server
-app.listen("1000", () => {
+app.listen(process.env.PORT || 1000, () => {
   console.log("Server running at http://localhost:1000");
 });
