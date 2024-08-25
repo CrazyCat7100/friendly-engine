@@ -1,6 +1,5 @@
 import express from "express";
 import mongoose from "mongoose";
-import bodyParser from "body-parser";
 
 let app = express();
 
@@ -9,8 +8,6 @@ mongoose
   .connect(
     "mongodb+srv://1:1@leaderboard.orui4.mongodb.net/?retryWrites=true&w=majority&appName=leaderboard",
     {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
     }
   )
   .then(() => {
@@ -22,9 +19,7 @@ mongoose
 
 // Middleware
 app.use(express.static("./static"));
-app.set("view engine", "ejs");
-app.use(bodyParser.json());
-
+app.set("view engine", "ejs")
 // Define a schema and model
 const Schema = mongoose.Schema;
 
