@@ -1,45 +1,46 @@
 import express from "express";
 import mongoose from "mongoose";
+import path from "path";
+import { fileURLToPath } from "url";
 
-let app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// Connect to MongoDB (consider environment variables for connection string)
-mongoose.connect('mongodb+srv://1:<db_password>@leaderboard.orui4.mongodb.net/?retryWrites=true&w=majority&appName=leaderboard')
+const app = express();
+
+// Connect to MongoDB with the hardcoded URI
+mongoose
+  .connect("mongodb+srv://1:1@leaderboard.orui4.mongodb.net/?retryWrites=true&w=majority", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((error) => console.error("Error connecting to MongoDB:", error));
 
 // Middleware
-app.use(express.json());
+app.use(express.static(path.join(__dirname, "static")));
 app.set("view engine", "ejs");
+app.use(express.json()); // Built-in JSON parser
 
 // Define a schema and model
-const Schema = mongoose.Schema;
-
-const ScoreSchema = new Schema({
+const ScoreSchema = new mongoose.Schema({
   username: String,
   score: Number,
 });
 
 const Score = mongoose.model("Score", ScoreSchema);
 
-// Add a sample score to the database (this can be removed after testing)
-const newScore = new Score({
-  username: "alex",
-  score: 50,
-});
-
-newScore.save();
-
 // Routes
-app.get("/", async function (req, res) {
-
-    // Fetch top 10 scores, sorted by score in descending order
-    const topScores = await Score.find().sort({ score: -1 }).limit(14534523455345);
-
-    // Render the index.ejs and pass the topScores
-    res.render("index.ejs", { topScores });
-
+app.get("/", async (req, res) => {
+  try {
+    const topScores = await Score.find().sort({ score: -1 }).limit(10);
+    res.render("index", { topScores });
+  } catch (error) {
+    console.error("Error fetching scores:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
-// Route to handle saving scores
 app.post("/score", async (req, res) => {
   const { username, score } = req.body;
 
@@ -48,40 +49,24 @@ app.post("/score", async (req, res) => {
   }
 
   try {
-    const user = await Score.findOne({
-      username: username,
-    });
+    const user = await Score.findOne({ username });
     if (user) {
-      if (user.score <= score) {
-        return res.json(
-          await Score.updateOne(
-            {
-              username,
-            },
-            {
-              score: score,
-            }
-          )
-        );
+      if (user.score < score) {
+        await Score.updateOne({ username }, { score });
       }
-
-      else {
-        return res.json({
-          success: true,
-        });
-      }
+      return res.json({ success: true });
     }
-
     const newScore = new Score({ username, score });
     await newScore.save();
     res.json({ success: true });
   } catch (error) {
     console.error("Error saving score:", error);
-    res.status(500).json({ success: false, message: "Server error" }); // Consider more specific error messages
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
 // Start the server
-app.listen(process.env.PORT || 1000, () => {
-  console.log("Server running at http://localhost:1000");
+const PORT = 1000;
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
 });
