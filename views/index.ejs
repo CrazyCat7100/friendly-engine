@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Whack-a-Mole</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="holes">
+    <div class="hole 1">
+      <div class="mole m1">
+        <img src="mole.png" alt="Mole" />
+      </div>
+    </div>
+    <div class="hole 2">
+      <div class="mole m2">
+        <img src="mole.png" alt="Mole" />
+      </div>
+    </div>
+    <div class="hole 3">
+      <div class="mole m3">
+        <img src="mole.png" alt="Mole" />
+      </div>
+    </div>
+    <div class="hole 4">
+      <div class="mole m4">
+        <img src="mole.png" alt="Mole" />
+      </div>
+    </div>
+    <div class="hole 5">
+      <div class="mole m5">
+        <img src="mole.png" alt="Mole" />
+      </div>
+    </div>
+    <div class="hole 6">
+      <div class="mole m6">
+        <img src="mole.png" alt="Mole" />
+      </div>
+    </div>
+    <div class="hole 7">
+      <div class="mole m7">
+        <img src="mole.png" alt="Mole" />
+      </div>
+    </div>
+    <div class="hole 8">
+      <div class="mole m8">
+        <img src="mole.png" alt="Mole" />
+      </div>
+    </div>
+    <div class="hole 9">
+      <div class="mole m9">
+        <img src="mole.png" alt="Mole" />
+      </div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="timer">Time: 30</div>
+    <div class="counter">Score: 0</div>
+    <button onclick="location.reload()" class="playagain">Play Again</button>
+  </div>
+
+  <button class="open-leaderboard">Leaderboard</button>
+
+  <div class="leaderboard hidden">
+    <button class="close-leaderboard">X</button>
+    <h2>Top Scores</h2>
+    <ul>
+        <% topScores.forEach(function(score, index) { %>
+            <li>
+                <span class="rank">#<%= index + 1 %></span>
+                <span class="username"><%= score.username %></span>
+                <span class="score"><%= score.score %></span>
+            </li>
+        <% }); %>
+    </ul>
+  </div>
+
+  <div class="savescore">
+    <h1>Congratulations on getting your first high score in Whack-a-Mole! Enter your name below (Make sure its your real name or your not getting a prize if you win) and click save. You will automatically get put on the leaderboard. The next time you beat your high score, the leaderboard will automatically update 👌</h1>
+    <input type="text" placeholder="Enter your name">
+    <button class="savebtn">Save</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
